@@ -22,7 +22,7 @@ func main() {
 	}
 
 	server := grpc.NewServer()
-	syncv1grpc.RegisterFlagServiceServer(server, &ServerImpl{})
+	syncv1grpc.RegisterFlagSyncServiceServer(server, &ServerImpl{})
 
 	fmt.Printf("Server listening : %s", host+":"+port)
 	err = server.Serve(listen)
@@ -35,8 +35,8 @@ func main() {
 type ServerImpl struct {
 }
 
-func (s *ServerImpl) SyncFlags(req *v1.SyncFlagsRequest, stream syncv1grpc.FlagService_SyncFlagsServer) error {
-	log.Printf("Requesting flags for : %s", req.Key)
+func (s *ServerImpl) SyncFlags(req *v1.SyncFlagsRequest, stream syncv1grpc.FlagSyncService_SyncFlagsServer) error {
+	log.Printf("Requesting flags for : %s", req.ProviderId)
 
 	for _, data := range gemFlagSlice() {
 		err := stream.Send(&data)
