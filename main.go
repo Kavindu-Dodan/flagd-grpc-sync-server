@@ -17,17 +17,17 @@ const port = "9090"
 func main() {
 	listen, err := net.Listen("tcp", host+":"+port)
 	if err != nil {
-		log.Printf("Error when listening to address : %s", err.Error())
+		log.Printf("Error when listening to address : %s\n", err.Error())
 		return
 	}
 
 	server := grpc.NewServer()
 	syncv1grpc.RegisterFlagSyncServiceServer(server, &ServerImpl{})
 
-	fmt.Printf("Server listening : %s", host+":"+port)
+	fmt.Printf("Server listening : %s\n", host+":"+port)
 	err = server.Serve(listen)
 	if err != nil {
-		log.Printf("Error when starting the server : %s", err.Error())
+		log.Printf("Error when starting the server : %s\n", err.Error())
 		return
 	}
 }
@@ -50,12 +50,12 @@ func (s *ServerImpl) SyncFlags(req *v1.SyncFlagsRequest, stream syncv1grpc.FlagS
 	// long sleep
 	for {
 		err := stream.Send(&v1.SyncFlagsResponse{
-			Flags: "",
-			State: v1.SyncState_SYNC_STATE_PING,
+			FlagConfiguration: "",
+			State:             v1.SyncState_SYNC_STATE_PING,
 		})
 
 		if err != nil {
-			fmt.Printf("Error with stream: %s", err.Error())
+			fmt.Printf("Error with stream: %s\n", err.Error())
 			return err
 		}
 
@@ -66,28 +66,28 @@ func (s *ServerImpl) SyncFlags(req *v1.SyncFlagsRequest, stream syncv1grpc.FlagS
 func gemFlagSlice() []v1.SyncFlagsResponse {
 	return []v1.SyncFlagsResponse{
 		{
-			Flags: readJson("flags/full.json"),
-			State: v1.SyncState_SYNC_STATE_ALL,
+			FlagConfiguration: readJson("flags/full.json"),
+			State:             v1.SyncState_SYNC_STATE_ALL,
 		},
 		{
-			Flags: "",
-			State: v1.SyncState_SYNC_STATE_PING,
+			FlagConfiguration: "",
+			State:             v1.SyncState_SYNC_STATE_PING,
 		},
 		{
-			Flags: readJson("flags/add.json"),
-			State: v1.SyncState_SYNC_STATE_ADD,
+			FlagConfiguration: readJson("flags/add.json"),
+			State:             v1.SyncState_SYNC_STATE_ADD,
 		},
 		{
-			Flags: "",
-			State: 41,
+			FlagConfiguration: "",
+			State:             41,
 		},
 		{
-			Flags: readJson("flags/remove.json"),
-			State: v1.SyncState_SYNC_STATE_DELETE,
+			FlagConfiguration: readJson("flags/remove.json"),
+			State:             v1.SyncState_SYNC_STATE_DELETE,
 		},
 		{
-			Flags: readJson("flags/full2.json"),
-			State: v1.SyncState_SYNC_STATE_ALL,
+			FlagConfiguration: readJson("flags/full2.json"),
+			State:             v1.SyncState_SYNC_STATE_ALL,
 		},
 	}
 }
