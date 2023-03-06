@@ -1,8 +1,9 @@
 package Core
 
 import (
-	"buf.build/gen/go/kavindudodan/flagd/grpc/go/sync/v1/syncv1grpc"
-	v1 "buf.build/gen/go/kavindudodan/flagd/protocolbuffers/go/sync/v1"
+	"buf.build/gen/go/open-feature/flagd/grpc/go/sync/v1/syncv1grpc"
+	v1 "buf.build/gen/go/open-feature/flagd/protocolbuffers/go/sync/v1"
+	"context"
 	"crypto/tls"
 	"fmt"
 	"google.golang.org/grpc"
@@ -86,6 +87,12 @@ func (s *ServerImpl) SyncFlags(req *v1.SyncFlagsRequest, stream syncv1grpc.FlagS
 
 		time.Sleep(10 * time.Second)
 	}
+}
+
+func (s *ServerImpl) FetchAllFlags(context.Context, *v1.FetchAllFlagsRequest) (*v1.FetchAllFlagsResponse, error) {
+	return &v1.FetchAllFlagsResponse{
+		FlagConfiguration: fulA,
+	}, nil
 }
 
 func mockFlagSlice() []v1.SyncFlagsResponse {
