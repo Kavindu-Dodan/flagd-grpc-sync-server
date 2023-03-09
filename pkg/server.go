@@ -33,7 +33,7 @@ func (s *Server) Start() {
 	server := grpc.NewServer(options...)
 	syncv1grpc.RegisterFlagSyncServiceServer(server, &ServerImpl{})
 
-	fmt.Printf("Server listening : %s\n", hostDefault+":"+portDefault)
+	fmt.Printf("Server listening : %s\n", s.Config.Host+":"+s.Config.Port)
 	err = server.Serve(listen)
 	if err != nil {
 		log.Printf("Error when starting the server : %s\n", err.Error())
