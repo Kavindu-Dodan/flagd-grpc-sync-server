@@ -32,12 +32,9 @@ go run main.go -s=true -certPath=server.crt -keyPath=server.key
 
 Then start your GRPC sync enabled flagd.
 
-Related to - https://github.com/open-feature/flagd/pull/297
-
 ### Generate certificates ? 
 
 Given below are some commands you can use to generate CA cert and Server cert to used with `localhost`
-
 
 #### Generate CA cert
 

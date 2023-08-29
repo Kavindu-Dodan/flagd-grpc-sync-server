@@ -6,6 +6,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"
@@ -18,6 +19,12 @@ type Server struct {
 }
 
 func (s *Server) Start() {
+	err := SetupTraceProvider()
+	if err != nil {
+		log.Printf("Error setting up telemetry : %s\n", err.Error())
+		return
+	}
+
 	listen, err := net.Listen("tcp", s.Config.Host+":"+s.Config.Port)
 	if err != nil {
 		log.Printf("Error when listening to address : %s\n", err.Error())
@@ -26,9 +33,11 @@ func (s *Server) Start() {
 
 	options, err := s.buildOptions()
 	if err != nil {
-		log.Printf("Error building dial options : %s\n", err.Error())
+		log.Printf("Error building gRPC options : %s\n", err.Error())
 		return
 	}
+
+	options = append(options, grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()))
 
 	server := grpc.NewServer(options...)
 	syncv1grpc.RegisterFlagSyncServiceServer(server, &ServerImpl{})
@@ -54,10 +63,10 @@ func (s *Server) buildOptions() ([]grpc.ServerOption, error) {
 	}
 
 	options = append(options, grpc.Creds(credentials.NewServerTLSFromCert(&keyPair)))
-
 	return options, nil
 }
 
+// ServerImpl implements the flagd Sync contract
 type ServerImpl struct {
 }
 
@@ -70,23 +79,10 @@ func (s *ServerImpl) SyncFlags(req *v1.SyncFlagsRequest, stream syncv1grpc.FlagS
 			fmt.Println("Error sending: " + err.Error())
 			return err
 		}
-		time.Sleep(10 * time.Second)
+		time.Sleep(5 * time.Second)
 	}
 
-	// long sleep
-	for {
-		err := stream.Send(&v1.SyncFlagsResponse{
-			FlagConfiguration: "",
-			State:             v1.SyncState_SYNC_STATE_PING,
-		})
-
-		if err != nil {
-			fmt.Printf("Error with stream: %s\n", err.Error())
-			return err
-		}
-
-		time.Sleep(10 * time.Second)
-	}
+	return nil
 }
 
 func (s *ServerImpl) FetchAllFlags(context.Context, *v1.FetchAllFlagsRequest) (*v1.FetchAllFlagsResponse, error) {
@@ -95,6 +91,7 @@ func (s *ServerImpl) FetchAllFlags(context.Context, *v1.FetchAllFlagsRequest) (*
 	}, nil
 }
 
+// mockFlagSlice provider mock response to be used by stream response
 func mockFlagSlice() []v1.SyncFlagsResponse {
 	return []v1.SyncFlagsResponse{
 		{
