@@ -71,7 +71,7 @@ type ServerImpl struct {
 }
 
 func (s *ServerImpl) SyncFlags(req *v1.SyncFlagsRequest, stream syncv1grpc.FlagSyncService_SyncFlagsServer) error {
-	log.Printf("Requesting flags for : %s", req.ProviderId)
+	log.Printf("Requesting flags for provider : %s", req.ProviderId)
 
 	for _, data := range mockFlagSlice() {
 		err := stream.Send(&data)

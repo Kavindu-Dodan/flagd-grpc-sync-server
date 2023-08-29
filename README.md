@@ -1,8 +1,8 @@
 ## Flagd GRPC sync provider
 
-A simple POC for [flagd](https://github.com/open-feature/flagd) which provides GRPC flag configuration syncs.
+A simple [flagd](https://github.com/open-feature/flagd) gRPC flag configuration sync source.
 
-Utilize buf definitions at https://buf.build/kavindudodan/flagd 
+This implementation confirms to gPRC sync definition of flagd - https://buf.build/open-feature/flagd/docs/main:sync.v1
 
 ### How to run ?
 
