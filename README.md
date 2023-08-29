@@ -7,13 +7,21 @@ This implementation confirms to gPRC sync definition of flagd - https://buf.buil
 ### How to run ?
 
 ```shell
-go run main.go <OPTIONS>
+go run main.go
 ```
 
-Following options are available,
+and then, start flagd in local mode (for example with source),
+
+```shell
+go run main.go start --uri grpc://127.0.0.1:8080 --debug
+```
+
+#### Options
+
+Following options are available to the start command,
 
 ```text
- -certPath string
+  -certPath string
         certificate path for tls connection
   -h string
         hostDefault of the server (default "localhost")
@@ -30,7 +38,9 @@ For example, to start with TLS certs,
 go run main.go -s=true -certPath=server.crt -keyPath=server.key
 ```
 
-Then start your GRPC sync enabled flagd.
+Then start your flagd with gRPC TLS sync.
+
+---
 
 ### Generate certificates ? 
 
